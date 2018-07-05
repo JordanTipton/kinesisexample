@@ -15,7 +15,7 @@
  * Modifications to this file have been made by Jordan Tipton
  */
 
-package com.amazonaws.services.kinesis.samples.stocktrades.processor
+package com.jordantipton.kinesisexample.processor
 
 /*
  *

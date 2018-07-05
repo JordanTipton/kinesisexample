@@ -36,7 +36,7 @@ import com.jordantipton.kinesisexample.utils.CredentialUtils
 import java.nio.ByteBuffer
 
 
-class StockTradesWriter {
+object StockTradesWriter {
 
     private val LOG = LogFactory.getLog(StockTradesWriter::class.java)
 
@@ -106,6 +106,8 @@ class StockTradesWriter {
 
     }
 
+    @Throws(Exception::class)
+    @JvmStatic
     fun main(args: Array<String>) {
         checkUsage(args)
 
