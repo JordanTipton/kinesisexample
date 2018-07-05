@@ -89,8 +89,7 @@ class StockTradeRecordProcessor : IRecordProcessor {
 
     private fun processRecord(record: Record) {
         val gson = GsonBuilder().create()
-
-        val trade = gson.fromJson(record.data.toString(), StockTrade::class.java)
+        val trade = gson.fromJson(String(record.data.array()), StockTrade::class.java)
         if (trade == null) {
             LOG.warn("Skipping record. Unable to parse record into StockTrade. Partition Key: " + record.partitionKey)
             return
