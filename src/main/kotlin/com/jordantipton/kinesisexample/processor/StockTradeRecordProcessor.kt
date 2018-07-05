@@ -20,9 +20,12 @@ package com.jordantipton.kinesisexample.processor
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.InvalidStateException
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.ShutdownException
 import com.amazonaws.services.kinesis.clientlibrary.exceptions.ThrottlingException
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessor
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.ShutdownReason
+import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput
+import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput
+import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput
 import com.amazonaws.services.kinesis.model.Record
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
@@ -44,9 +47,9 @@ class StockTradeRecordProcessor : IRecordProcessor {
     /**
      * {@inheritDoc}
      */
-    override fun initialize(shardId: String) {
-        LOG.info("Initializing record processor for shard: $shardId")
-        this.kinesisShardId = shardId
+    override fun initialize(initializationInput: InitializationInput) {
+        LOG.info("Initializing record processor for shard: ${initializationInput.shardId}")
+        this.kinesisShardId = initializationInput.shardId
         nextReportingTimeInMillis = System.currentTimeMillis() + REPORTING_INTERVAL_MILLIS
         nextCheckpointTimeInMillis = System.currentTimeMillis() + CHECKPOINT_INTERVAL_MILLIS
     }
@@ -54,8 +57,8 @@ class StockTradeRecordProcessor : IRecordProcessor {
     /**
      * {@inheritDoc}
      */
-    override fun processRecords(records: List<Record>, checkpointer: IRecordProcessorCheckpointer) {
-        for (record in records) {
+    override fun processRecords(processRecordsInput : ProcessRecordsInput) {
+        for (record in processRecordsInput.records) {
             // process record
             processRecord(record)
         }
@@ -69,7 +72,7 @@ class StockTradeRecordProcessor : IRecordProcessor {
 
         // Checkpoint once every checkpoint interval
         if (System.currentTimeMillis() > nextCheckpointTimeInMillis) {
-            checkpoint(checkpointer)
+            checkpoint(processRecordsInput.checkpointer)
             nextCheckpointTimeInMillis = System.currentTimeMillis() + CHECKPOINT_INTERVAL_MILLIS
         }
     }
@@ -98,15 +101,15 @@ class StockTradeRecordProcessor : IRecordProcessor {
     /**
      * {@inheritDoc}
      */
-    override fun shutdown(checkpointer: IRecordProcessorCheckpointer, reason: ShutdownReason) {
+    override fun shutdown(shutdownInput : ShutdownInput) {
         LOG.info("Shutting down record processor for shard: " + kinesisShardId!!)
         // Important to checkpoint after reaching end of shard, so we can start processing data from child shards.
-        if (reason == ShutdownReason.TERMINATE) {
-            checkpoint(checkpointer)
+        if (shutdownInput.shutdownReason == ShutdownReason.TERMINATE) {
+            checkpoint(shutdownInput.checkpointer)
         }
     }
 
-    private fun checkpoint(checkpointer: IRecordProcessorCheckpointer) {
+    private fun checkpoint(checkpointer : IRecordProcessorCheckpointer) {
         LOG.info("Checkpointing shard " + kinesisShardId!!)
         try {
             checkpointer.checkpoint()

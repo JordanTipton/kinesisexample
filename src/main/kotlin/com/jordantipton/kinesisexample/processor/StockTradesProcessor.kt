@@ -93,7 +93,10 @@ object StockTradesProcessor {
         val recordProcessorFactory = StockTradeRecordProcessorFactory()
 
         // Create the KCL worker with the stock trade record processor factory
-        val worker = Worker(recordProcessorFactory, kclConfig)
+        val worker = Worker.Builder()
+                .recordProcessorFactory(recordProcessorFactory)
+                .config(kclConfig)
+                .build()
 
         var exitCode = 0
         try {

@@ -31,8 +31,8 @@ package com.jordantipton.kinesisexample.processor
  * permissions and limitations under the License.
  */
 
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessor
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorFactory
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor
+import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessorFactory
 
 /**
  * Used to create new stock trade record processors.
