@@ -17,19 +17,15 @@
 
 package com.jordantipton.kinesisexample.writer
 
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
 import com.amazonaws.AmazonClientException
-import com.amazonaws.regions.Region
 import com.amazonaws.regions.RegionUtils
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder
 import com.amazonaws.services.kinesis.AmazonKinesis
-import com.amazonaws.services.kinesis.model.DescribeStreamResult
 import com.amazonaws.services.kinesis.model.PutRecordRequest
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonSerializer
 import com.jordantipton.kinesisexample.model.StockTrade
 import com.jordantipton.kinesisexample.utils.ConfigurationUtils
 import com.jordantipton.kinesisexample.utils.CredentialUtils

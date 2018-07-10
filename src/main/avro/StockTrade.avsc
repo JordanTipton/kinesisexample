@@ -1,0 +1,11 @@
+{"namespace": "com.jordantipton.kinesisexample.model",
+ "type": "record",
+ "name": "StockTrade",
+ "fields": [
+     {"name": "tickerSymbol", "type": "string"},
+     {"name": "tradeType", "type": {"name": "TradeType", "type": "enum", "symbols": ["BUY", "SELL"]}},
+     {"name": "price", "type": ["double", "null"]},
+     {"name": "quantity", "type": ["long", "null"]},
+     {"name": "id", "type": ["long", "null"]}
+ ]
+}

@@ -17,9 +17,10 @@
 
 package com.jordantipton.kinesisexample.writer
 
+import com.jordantipton.kinesisexample.model.StockTrade
+import com.jordantipton.kinesisexample.model.TradeType
 import java.util.concurrent.atomic.AtomicLong
 import java.util.Random
-import com.jordantipton.kinesisexample.model.StockTrade
 
 /**
  * Generates random stock trades by picking randomly from a collection of stocks, assigning a
@@ -82,9 +83,9 @@ class StockTradeGenerator {
         price = Math.round(price * 100.0) / 100.0
 
         // set the trade type to buy or sell depending on the probability of sell
-        var tradeType: StockTrade.TradeType = StockTrade.TradeType.BUY
+        var tradeType: TradeType = TradeType.BUY
         if (random.nextDouble() < PROBABILITY_SELL) {
-            tradeType = StockTrade.TradeType.SELL
+            tradeType = TradeType.SELL
         }
 
         // randomly pick a quantity of shares

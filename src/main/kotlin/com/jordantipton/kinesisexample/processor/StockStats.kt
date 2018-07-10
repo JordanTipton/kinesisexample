@@ -17,11 +17,11 @@
 
 package com.jordantipton.kinesisexample.processor
 
+import com.jordantipton.kinesisexample.model.StockTrade
+import com.jordantipton.kinesisexample.model.TradeType
+
 import java.util.EnumMap
 import java.util.HashMap
-
-import com.jordantipton.kinesisexample.model.StockTrade
-import com.jordantipton.kinesisexample.model.StockTrade.TradeType
 
 /**
  * Maintains running statistics of stock trades passed to it.
@@ -58,31 +58,31 @@ class StockStats {
      *
      * @param trade Stock trade instance
      */
-    fun addStockTrade(trade:StockTrade) {
+    fun addStockTrade(trade: StockTrade) {
         // update buy/sell count
-        val type = trade.tradeType
+        val type = trade.getTradeType()
         val counts = countsByTradeType[type]
-        var count:Long? = counts?.get(trade.tickerSymbol)
+        var count:Long? = counts?.get(trade.getTickerSymbol())
         if (count == null)
         {
             count = 0L
         }
-        counts?.put(trade.tickerSymbol, ++count)
+        counts?.put(trade.getTickerSymbol(), ++count)
 
         // update most popular stock
         val mostPopular = mostPopularByTradeType[type]
         if (mostPopular == null || countsByTradeType?.get(type)?.get(mostPopular)!! < count)
         {
-            mostPopularByTradeType[type] = trade.tickerSymbol
+            mostPopularByTradeType[type] = trade.getTickerSymbol()
         }
 
         // update largest sell order
         if (type === TradeType.SELL)
         {
-            if (largestSellOrderStock == null || trade.quantity > largestSellOrderQuantity)
+            if (largestSellOrderStock == null || trade.getQuantity() > largestSellOrderQuantity)
             {
-                largestSellOrderStock = trade.tickerSymbol
-                largestSellOrderQuantity = trade.quantity
+                largestSellOrderStock = trade.getTickerSymbol()
+                largestSellOrderQuantity = trade.getQuantity()
             }
         }
     }

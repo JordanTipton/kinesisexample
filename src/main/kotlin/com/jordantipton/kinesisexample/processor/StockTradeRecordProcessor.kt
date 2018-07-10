@@ -27,7 +27,6 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput
 import com.amazonaws.services.kinesis.model.Record
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import com.google.gson.GsonBuilder
 import com.jordantipton.kinesisexample.model.StockTrade
