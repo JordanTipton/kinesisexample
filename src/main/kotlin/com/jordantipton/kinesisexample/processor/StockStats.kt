@@ -97,11 +97,11 @@ class StockStats {
             largestSellOrderQuantity, largestSellOrderStock)
 }
 
-    private fun getMostPopularStock(tradeType:TradeType):String {
-        return mostPopularByTradeType[tradeType]!!
+    internal fun getMostPopularStock(tradeType:TradeType):String? {
+        return mostPopularByTradeType[tradeType]
     }
 
-    private fun getMostPopularStockCount(tradeType:TradeType):Long? {
+    internal fun getMostPopularStockCount(tradeType:TradeType):Long? {
         val mostPopular = getMostPopularStock(tradeType)
         return countsByTradeType[tradeType]?.get(mostPopular)
     }

@@ -25,11 +25,14 @@ import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder
 import com.amazonaws.services.kinesis.AmazonKinesis
 import com.amazonaws.services.kinesis.model.PutRecordRequest
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException
-import com.google.gson.GsonBuilder
 import com.jordantipton.kinesisexample.model.StockTrade
 import com.jordantipton.kinesisexample.utils.ConfigurationUtils
 import com.jordantipton.kinesisexample.utils.CredentialUtils
+import org.apache.avro.io.EncoderFactory
+import org.apache.avro.specific.SpecificDatumWriter
 import java.nio.ByteBuffer
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 
 
 object StockTradesWriter {
@@ -78,12 +81,18 @@ object StockTradesWriter {
      */
     private fun sendStockTrade(trade: StockTrade, kinesisClient: AmazonKinesis,
                                streamName: String) {
-        val gson = GsonBuilder().create()
-
-        val bytes = gson.toJson(trade).toByteArray()
-        // The bytes could be null if there is an issue with the JSON serialization by the Jackson JSON library.
-        if (bytes == null) {
-            LOG.warn("Could not get JSON bytes for stock trade")
+        val datumWriter = SpecificDatumWriter<StockTrade>(StockTrade.getClassSchema())
+        var bytes = ByteArray(0)
+        val output = ByteArrayOutputStream()
+        try {
+            output.use {
+                val encoder = EncoderFactory.get().binaryEncoder(output, null)
+                datumWriter.write(trade, encoder)
+                encoder.flush()
+                bytes = output.toByteArray()
+            }
+        } catch (e: IOException) {
+            LOG.warn("Failed to encode Avro bytes for stock trade. $e")
             return
         }
 
@@ -91,7 +100,7 @@ object StockTradesWriter {
         val putRecord = PutRecordRequest()
         putRecord.streamName = streamName
         // We use the ticker symbol as the partition key, as explained in the tutorial.
-        putRecord.partitionKey = trade.tickerSymbol
+        putRecord.partitionKey = trade.getTickerSymbol()
         putRecord.data = ByteBuffer.wrap(bytes)
 
         try {

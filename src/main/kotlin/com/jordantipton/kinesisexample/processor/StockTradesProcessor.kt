@@ -21,13 +21,9 @@ import java.util.UUID
 import java.util.logging.Level
 import java.util.logging.Logger
 
-import com.amazonaws.auth.AWSCredentialsProvider
-import com.amazonaws.regions.Region
 import com.amazonaws.regions.RegionUtils
-import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorFactory
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.KinesisClientLibConfiguration
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.Worker
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import com.jordantipton.kinesisexample.utils.ConfigurationUtils
 import com.jordantipton.kinesisexample.utils.CredentialUtils

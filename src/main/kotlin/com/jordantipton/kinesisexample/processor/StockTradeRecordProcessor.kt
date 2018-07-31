@@ -28,8 +28,10 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput
 import com.amazonaws.services.kinesis.model.Record
 import org.apache.commons.logging.LogFactory
-import com.google.gson.GsonBuilder
 import com.jordantipton.kinesisexample.model.StockTrade
+import org.apache.avro.io.DecoderFactory
+import org.apache.avro.specific.SpecificDatumReader
+import java.io.IOException
 
 /**
  * Processes records retrieved from stock trades stream.
@@ -41,7 +43,7 @@ class StockTradeRecordProcessor : IRecordProcessor {
     private var nextCheckpointTimeInMillis: Long = 0
 
     // Aggregates stats for stock trades
-    private var stockStats = StockStats()
+    internal var stockStats = StockStats()
 
     /**
      * {@inheritDoc}
@@ -87,12 +89,16 @@ class StockTradeRecordProcessor : IRecordProcessor {
     }
 
     private fun processRecord(record: Record) {
-        val gson = GsonBuilder().create()
-        val trade = gson.fromJson(String(record.data.array()), StockTrade::class.java)
-        if (trade == null) {
-            LOG.warn("Skipping record. Unable to parse record into StockTrade. Partition Key: " + record.partitionKey)
+        var trade: StockTrade
+        val datumReader = SpecificDatumReader<StockTrade>(StockTrade.getClassSchema())
+        val decoder = DecoderFactory.get().binaryDecoder(record.data.array(), null)
+        try {
+            trade = datumReader.read(null, decoder)
+        } catch (e: IOException) {
+            LOG.warn("Skipping record. Unable to parse record into StockTrade. Partition Key: \" + record.partitionKey")
             return
         }
+
         stockStats.addStockTrade(trade!!)
     }
 
